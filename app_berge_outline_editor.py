@@ -24,7 +24,7 @@ class Window(tkinter.Frame):
         label_filename.pack(side=tkinter.TOP, anchor='w', padx=10, pady=5)
         self.label_filename = label_filename
         
-        open_button = tkinter.Button(button_frame_top, text="Open File", command=self.client_open_file)
+        open_button = tkinter.Button(button_frame_top, text="Open File", command=self.client_select_file)
         open_button.pack(side=tkinter.RIGHT, padx=10)
 
         textbox = tkinter.Text(self, width=90, height=10) #measured in characters
@@ -37,23 +37,34 @@ class Window(tkinter.Frame):
         
         quitButton = tkinter.Button(button_frame_bottom, text="Quit", command=self.client_quit)
         quitButton.pack(side=tkinter.RIGHT, padx=10)
+            
+    def client_quit(self):
+        exit()
+        
+    def client_select_file(self):
+        filename = tkinter.filedialog.askopenfilename(filetypes=[('Markdown', '*.md')])
+        if filename == (): #empty tuple
+            filename = None
+        if filename == None:
+            return
+        self.current_filename = filename
+        self.load_file()
         
     def update_label_filename(self):
         if self.current_filename == None:
             self.label_filename['text'] = "Filename: None"
         else:
             self.label_filename['text'] = "Filename: " + os.path.basename(self.current_filename)
-            
-    def client_quit(self):
-        exit()
-        
-    def client_open_file(self):
-        filename = tkinter.filedialog.askopenfilename(filetypes=[('Markdown', '*.md')])
-        if filename == (): #empty tuple
-            filename = None
-        self.current_filename = filename
-        self.update_label_filename()
 
+    def load_file(self):
+        if self.current_filename == None:
+            print("Error: No file selected")
+            return
+        f = open(self.current_filename, "r")
+        text = f.read()
+        f.close()
+        print(text);  # TODO parse file into internal format - verify file format
+        self.update_label_filename()
 		
 if __name__ == "__main__":
     root = tkinter.Tk()

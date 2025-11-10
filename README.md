@@ -25,6 +25,6 @@ Inner Format:
   
 See `test_files` directory for examples of the file format.
 
-## Features
+## Warnings
 
-TODO
+Berge is built for small projects.  It loads the entire text of the document at once, so a large document could cause it to run out of memory.
