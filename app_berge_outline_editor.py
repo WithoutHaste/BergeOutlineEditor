@@ -48,7 +48,7 @@ class Window(tkinter.Frame):
         exit()
         
     def client_open_file(self):
-        filename = tkinter.filedialog.askopenfilename()
+        filename = tkinter.filedialog.askopenfilename(filetypes=[('Markdown', '*.md')])
         if filename == (): #empty tuple
             filename = None
         self.current_filename = filename
