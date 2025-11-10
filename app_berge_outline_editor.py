@@ -4,6 +4,7 @@ import re
 import os
 import subprocess
 import uuid
+from cls_file_format import FileFormat
 
 
 class Window(tkinter.Frame):
@@ -63,7 +64,9 @@ class Window(tkinter.Frame):
         f = open(self.current_filename, "r")
         text = f.read()
         f.close()
-        print(text);  # TODO parse file into internal format - verify file format
+        self.file_format = FileFormat(text)
+        if not self.file_format.is_valid():
+            print("Error: File format is invalid") # TODO display the errors, and display error where user will notice it
         self.update_label_filename()
 		
 if __name__ == "__main__":
