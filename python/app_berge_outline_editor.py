@@ -72,8 +72,8 @@ class Window(tkinter.Frame):
     def update_section_frame(self):
         Window.remove_children(self.section_frame)
         for file_section in self.file_format.file_sections:
-            textbox = tkinter.Text(self.section_frame, width=90, height=10) #measured in characters
-            textbox.insert(tkinter.END, "test")
+            textbox = tkinter.Text(self.section_frame, width=90, height=4) #measured in characters
+            textbox.insert(tkinter.END, file_section.get_full_text())
             textbox.pack(side=tkinter.TOP, fill=tkinter.X, expand=True, anchor='w', padx=10)
         # MAYBE NEED the short answer is this: when you destroy all the children widgets, pack no longer thinks it "owns" the window since there are no children to manage. Because of that, it doesn't try to resize the window. A simple work-around is to pack a tiny 1x1 frame in the window temporarily, to cause pack to resize the containing frame.
 

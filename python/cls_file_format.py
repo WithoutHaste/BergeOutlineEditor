@@ -57,6 +57,9 @@ class FileSection():
     def append_child(self, child):
         self.children.append(child)
         
+    def get_full_text(self):
+        return "\n".join(self.lines).strip()
+        
     @staticmethod
     def get_level(line):
         pattern = re.compile('#+', re.IGNORECASE )
