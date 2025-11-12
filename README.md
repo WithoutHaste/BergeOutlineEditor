@@ -4,11 +4,12 @@ Small app to keep writing organized from outline to final version.
 
 ## Quick Start
 
-Run `python3 app_berge_outline_editor.py`.
+Python:
+- Navigate to `python` folder > Run `python3 app_berge_outline_editor.py`.
 
 ## Architecture
 
-Python3
+Jumping between Python and C++, depending on which seems easier.
 
 ## File Format
 

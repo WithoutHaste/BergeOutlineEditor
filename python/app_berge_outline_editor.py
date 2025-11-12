@@ -28,10 +28,9 @@ class Window(tkinter.Frame):
         open_button = tkinter.Button(button_frame_top, text="Open File", command=self.client_select_file)
         open_button.pack(side=tkinter.RIGHT, padx=10)
 
-        textbox = tkinter.Text(self, width=90, height=10) #measured in characters
-        textbox.pack(side=tkinter.TOP, fill=tkinter.X, expand=True, anchor='w', padx=10)
-        textbox.focus_set()
-        self.textbox = textbox
+        section_frame  =  tkinter.Frame(self,  width=200,  height=400)
+        section_frame.pack(side=tkinter.TOP,  fill=tkinter.BOTH, expand=True,  padx=10)        
+        self.section_frame = section_frame
         
         button_frame_bottom  =  tkinter.Frame(self,  width=200,  height=400)
         button_frame_bottom.pack(side=tkinter.TOP,  fill=tkinter.X, expand=True,  padx=0)
@@ -68,6 +67,21 @@ class Window(tkinter.Frame):
         if not self.file_format.is_valid():
             print("Error: File format is invalid") # TODO display the errors, and display error where user will notice it
         self.update_label_filename()
+        self.update_section_frame()
+        
+    def update_section_frame(self):
+        Window.remove_children(self.section_frame)
+        for file_section in self.file_format.file_sections:
+            textbox = tkinter.Text(self.section_frame, width=90, height=10) #measured in characters
+            textbox.insert(tkinter.END, "test")
+            textbox.pack(side=tkinter.TOP, fill=tkinter.X, expand=True, anchor='w', padx=10)
+        # MAYBE NEED the short answer is this: when you destroy all the children widgets, pack no longer thinks it "owns" the window since there are no children to manage. Because of that, it doesn't try to resize the window. A simple work-around is to pack a tiny 1x1 frame in the window temporarily, to cause pack to resize the containing frame.
+
+    @staticmethod
+    def remove_children(element):
+        for child in element.winfo_children():
+            child.destroy()
+
 		
 if __name__ == "__main__":
     root = tkinter.Tk()
