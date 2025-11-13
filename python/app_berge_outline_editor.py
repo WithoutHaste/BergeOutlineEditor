@@ -63,15 +63,15 @@ class Window(tkinter.Frame):
         f = open(self.current_filename, "r")
         text = f.read()
         f.close()
-        self.file_format = FileFormat(text)
-        if not self.file_format.is_valid():
+        self.current_data = FileFormat(text)
+        if not self.current_data.is_valid():
             print("Error: File format is invalid") # TODO display the errors, and display error where user will notice it
         self.update_label_filename()
         self.update_section_frame()
         
     def update_section_frame(self):
         Window.remove_children(self.section_frame)
-        for file_section in self.file_format.file_sections:
+        for file_section in self.current_data.file_sections:
             textbox = tkinter.Text(self.section_frame, width=90, height=4) #measured in characters
             textbox.insert(tkinter.END, file_section.get_full_text())
             textbox.pack(side=tkinter.TOP, fill=tkinter.X, expand=True, anchor='w', padx=10)
@@ -84,7 +84,7 @@ class Window(tkinter.Frame):
         print(event.widget.get("1.0", "end"))
         # TODO insert new section below here
         # figure out which file_section this widget corresponds to
-        # update self.file_format (which needs a new name) - tell it to insert a new file_section at the right point
+        # update self.current_data - tell it to insert a new file_section at the right point
         # then redo the whole display of the file
         # return focus to the correct widget - the newly added one
 
