@@ -8,7 +8,7 @@ class FileFormat():
     # will do its best to parse the file - will keep a list of errors
     def __init__(self, raw_text):
         self.parsing_errors = []
-        self.file_sections = [] # just the top-level sections
+        self.file_root = FileRoot()
         current_file_section = None
         lines = raw_text.split('\n')
         for line in lines:
@@ -27,7 +27,7 @@ class FileFormat():
             if current_file_section == None:
                 # new top-level section
                 current_file_section = FileSection(None)
-                self.file_sections.append(current_file_section)
+                self.file_root.append_child(current_file_section)
                 continue
             if level > current_file_section.level:
                 if level > current_file_section.level + 1:
@@ -39,6 +39,13 @@ class FileFormat():
         
     def is_valid(self):
         return len(self.parsing_errors) == 0
+        
+class FileRoot():
+    def __init__(self):
+        self.children = []
+        
+    def append_child(self, child):
+        self.children.append(child)
 
 class FileSection():
     def __init__(self, parent_section):

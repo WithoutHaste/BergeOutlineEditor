@@ -71,7 +71,7 @@ class Window(tkinter.Frame):
         
     def update_section_frame(self):
         Window.remove_children(self.section_frame)
-        for file_section in self.current_data.file_sections:
+        for file_section in self.current_data.file_root.children:
             textbox = tkinter.Text(self.section_frame, width=90, height=4) #measured in characters
             textbox.insert(tkinter.END, file_section.get_full_text())
             textbox.pack(side=tkinter.TOP, fill=tkinter.X, expand=True, anchor='w', padx=10)
