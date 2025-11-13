@@ -11,6 +11,7 @@ class Test_FileFormat(unittest.TestCase):
         result = FileFormat("abc\ndef\n# A\nghi")
         self.assertEqual(len(result.file_root.children), 1)
         self.assertEqual(result.file_root.children[0].lines, ['ghi'])
+        self.assertEqual(result.file_root.children[0].get_id(), 'A')
         self.assertEqual(len(result.parsing_errors), 0)
         # one set of nested headers
         result = FileFormat("# A\nabc\n## A.A\ndef\n### A.A.A\nghi")

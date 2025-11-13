@@ -53,15 +53,16 @@ class FileRoot():
         self.children.append(child)
         
     def get_child_id(self, child):
-        ith = self.__get_child_index(child)
+        ith = FileRoot.get_index_of_element(self.children, child)
         return FileRoot.convert_index_to_id(ith)
-        
-    def __get_child_index(self, child):
+            
+    @staticmethod
+    def get_index_of_element(collection, element):
         index = 0
-        for c in self.children:
-            index = index + 1
-            if c == child:
+        for c in collection:
+            if c == element:
                 return index
+            index = index + 1
                 
     # convert integer to characters
     # A to Z, AA to AZ to ZZ, etc
@@ -73,8 +74,6 @@ class FileRoot():
             return FileRoot.ID_CHARACTERS[index]
         while index > 0:
             remainder = int(index % char_count)
-            #print("index: " + str(index))
-            #print("remainder: " + str(remainder))
             result = FileRoot.ID_CHARACTERS[remainder] + result
             index = index - remainder
             index = index / char_count
@@ -108,15 +107,8 @@ class FileSection():
         
     def get_child_id(self, child):
         prefix = self.get_id()
-        ith = self.__get_child_index(child)
+        ith = FileRoot.get_index_of_element(self.children, child)
         return prefix + FileRoot.ID_DELIMITER + FileRoot.convert_index_to_id(ith)
-        
-    def __get_child_index(self, child):
-        index = 0
-        for c in self.children:
-            index = index + 1
-            if c == child:
-                return index
         
     @staticmethod
     def get_level(line):
