@@ -63,6 +63,18 @@ class Test_FileFormat(unittest.TestCase):
         self.assertEqual(len(result.file_root.children[0].children), 0)
         self.assertEqual(len(result.parsing_errors), 0)
         
+        
+class Test_FileRoot(unittest.TestCase):
+    def test_convert_index_to_id(self):
+        self.assertEqual(FileRoot.convert_index_to_id(0), 'A')
+        self.assertEqual(FileRoot.convert_index_to_id(1), 'B')
+        self.assertEqual(FileRoot.convert_index_to_id(24), 'Z')
+        self.assertEqual(FileRoot.convert_index_to_id(25), 'BA')
+        self.assertEqual(FileRoot.convert_index_to_id(26), 'BB')
+        self.assertEqual(FileRoot.convert_index_to_id(49), 'BZ')
+        self.assertEqual(FileRoot.convert_index_to_id(50), 'CA')
+        self.assertEqual(FileRoot.convert_index_to_id(625), 'BAA')
+        
 
 class Test_FileSection(unittest.TestCase):
     def test_get_level(self):

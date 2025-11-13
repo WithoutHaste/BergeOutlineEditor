@@ -42,12 +42,44 @@ class FileFormat():
         return len(self.parsing_errors) == 0
         
 class FileRoot():
+    ID_DELIMITER = "."
+    ID_CHARACTERS = ['A','B','C','D','E','F','G','H','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'] # skipping I (commonly looks like an L)
+    
     def __init__(self):
         self.children = []
         self.level = 0
         
     def append_child(self, child):
         self.children.append(child)
+        
+    def get_child_id(self, child):
+        ith = self.__get_child_index(child)
+        return FileRoot.convert_index_to_id(ith)
+        
+    def __get_child_index(self, child):
+        index = 0
+        for c in self.children:
+            index = index + 1
+            if c == child:
+                return index
+                
+    # convert integer to characters
+    # A to Z, AA to AZ to ZZ, etc
+    @staticmethod
+    def convert_index_to_id(index):
+        char_count = len(FileRoot.ID_CHARACTERS)
+        result = ""
+        if index == 0:
+            return FileRoot.ID_CHARACTERS[index]
+        while index > 0:
+            remainder = int(index % char_count)
+            #print("index: " + str(index))
+            #print("remainder: " + str(remainder))
+            result = FileRoot.ID_CHARACTERS[remainder] + result
+            index = index - remainder
+            index = index / char_count
+        return result
+        
 
 class FileSection():
     def __init__(self, parent_section):
@@ -68,6 +100,23 @@ class FileSection():
         
     def get_full_text(self):
         return "\n".join(self.lines).strip()
+        
+    # id is only valid for the current file configuration
+    # any adding/removing/reordering of sections can change all the ids
+    def get_id(self):
+        return self.parent.get_child_id(self)
+        
+    def get_child_id(self, child):
+        prefix = self.get_id()
+        ith = self.__get_child_index(child)
+        return prefix + FileRoot.ID_DELIMITER + FileRoot.convert_index_to_id(ith)
+        
+    def __get_child_index(self, child):
+        index = 0
+        for c in self.children:
+            index = index + 1
+            if c == child:
+                return index
         
     @staticmethod
     def get_level(line):
