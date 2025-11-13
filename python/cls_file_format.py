@@ -24,10 +24,11 @@ class FileFormat():
                 continue
             while current_file_section != None and level <= current_file_section.level:
                 current_file_section = current_file_section.parent
+                if isinstance(current_file_section, FileRoot):
+                    current_file_section = None
             if current_file_section == None:
                 # new top-level section
-                current_file_section = FileSection(None)
-                self.file_root.append_child(current_file_section)
+                current_file_section = FileSection(self.file_root)
                 continue
             if level > current_file_section.level:
                 if level > current_file_section.level + 1:
@@ -43,6 +44,7 @@ class FileFormat():
 class FileRoot():
     def __init__(self):
         self.children = []
+        self.level = 0
         
     def append_child(self, child):
         self.children.append(child)
