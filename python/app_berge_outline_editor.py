@@ -75,7 +75,22 @@ class Window(tkinter.Frame):
             textbox = tkinter.Text(self.section_frame, width=90, height=4) #measured in characters
             textbox.insert(tkinter.END, file_section.get_full_text())
             textbox.pack(side=tkinter.TOP, fill=tkinter.X, expand=True, anchor='w', padx=10)
+            textbox.bind('<Shift-Return>', self.section_shift_plus_return)
+            textbox.bind('<Shift-Down>', self.section_shift_plus_down)
         # MAYBE NEED the short answer is this: when you destroy all the children widgets, pack no longer thinks it "owns" the window since there are no children to manage. Because of that, it doesn't try to resize the window. A simple work-around is to pack a tiny 1x1 frame in the window temporarily, to cause pack to resize the containing frame.
+
+    def section_shift_plus_return(self, event):
+        print("shift-enter")
+        print(event.widget.get("1.0", "end"))
+        # TODO insert new section below here
+        # figure out which file_section this widget corresponds to
+        # update self.file_format (which needs a new name) - tell it to insert a new file_section at the right point
+        # then redo the whole display of the file
+        # return focus to the correct widget - the newly added one
+
+    def section_shift_plus_down(self, event):
+        print("shift-down")
+        # TODO change focus to section below here
 
     @staticmethod
     def remove_children(element):

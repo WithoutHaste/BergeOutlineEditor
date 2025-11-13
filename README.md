@@ -30,6 +30,12 @@ Inner Format:
   
 See `test_files` directory for examples of the file format.
 
+## Using the GUI
+
+Shift+Enter = Insert a new section below this one
+
+Shift+Down = Move cursor to the section below this one
+
 ## Warnings
 
 Berge is built for small projects.  It loads the entire text of the document at once, so a large document could cause it to run out of memory.
