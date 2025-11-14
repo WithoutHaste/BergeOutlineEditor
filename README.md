@@ -7,6 +7,11 @@ Small app to keep writing organized from outline to final version.
 Python:
 - Navigate to `python` folder > Run `python3 app_berge_outline_editor.py`.
 
+## Keyboard Commands
+
+When inside a section (textbox):
+- Shift+Enter will insert a new section sibling after the current one.
+
 ## Architecture
 
 Jumping between Python and C++, depending on which seems easier.

@@ -56,18 +56,22 @@ class FileRoot():
         self.children.append(child)
         
     # recursive - search section tree for the matching section
+    # returns None (couldn't find it) or the Id of the new section
     def add_sibling_after(self, section_id):
         child_index = 0
         for child in self.children:
             if child.get_id() == section_id:
-                self.children.insert(child_index + 1, FileSection(self))
-                return True
+                new_section = FileSection(self)
+                self.children.insert(child_index + 1, new_section)
+                return new_section.get_id()
             done = child.add_sibling_after(section_id)
-            if done:
-                return True
+            if done != None:
+                return done
             child_index = child_index + 1
-        return False
-        
+        return None
+
+    # ids are specific to the current arrangement of sections in the tree
+    # so the id of a block of text will change as new sections are added/removed/reordered
     def get_child_id(self, child):
         ith = FileRoot.get_index_of_element(self.children, child)
         return FileRoot.convert_index_to_id(ith)
@@ -123,17 +127,19 @@ class FileSection():
         self.children.append(child)
         
     # recursive - search section tree for the matching section
+    # returns None (couldn't find it) or the Id of the new section
     def add_sibling_after(self, section_id):
         child_index = 0
         for child in self.children:
             if child.get_id() == section_id:
-                self.children.insert(child_index + 1, FileSection(self))
-                return True
+                new_section = FileSection(self)
+                self.children.insert(child_index + 1, new_section)
+                return new_section.get_id()
             done = child.add_sibling_after(section_id)
-            if done:
-                return True
+            if done != None:
+                return done
             child_index = child_index + 1
-        return False
+        return None
         
     def get_full_text(self):
         return "\n".join(self.lines).strip()
