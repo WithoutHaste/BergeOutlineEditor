@@ -21,6 +21,8 @@ Goals:
 File Format: Text/Markdown
 
 Inner Format:
+- section headers don't actually matter, except for the "Duplicate" one
+  - section headers will be re-written by Berge on each save, so don't put important info into them
 - top-level headers indicate the "outline" units
   - each lower level under that indicates a greater level of detail being added
   - a lower level marked with "(final)" is part of the final draft of the document

@@ -91,6 +91,54 @@ class Test_FileRoot(unittest.TestCase):
         self.assertEqual(FileRoot.convert_index_to_id(50), 'CA')
         self.assertEqual(FileRoot.convert_index_to_id(625), 'BAA')
         
+    def test_add_sibling_after(self):
+        # after first top section - its also the last one
+        result = FileFormat("# A\nabc")
+        result.file_root.add_sibling_after('A')
+        self.assertEqual(len(result.file_root.children), 2)
+        self.assertEqual(result.file_root.children[0].lines, ['abc'])
+        self.assertEqual(result.file_root.children[0].get_id(), 'A')
+        self.assertEqual(result.file_root.children[1].lines, [])
+        self.assertEqual(result.file_root.children[1].get_id(), 'B')
+        # after first top section - there are others
+        result = FileFormat("# A\nabc\n# B\ndef")
+        result.file_root.add_sibling_after('A')
+        self.assertEqual(len(result.file_root.children), 3)
+        self.assertEqual(result.file_root.children[0].lines, ['abc'])
+        self.assertEqual(result.file_root.children[0].get_id(), 'A')
+        self.assertEqual(result.file_root.children[1].lines, [])
+        self.assertEqual(result.file_root.children[1].get_id(), 'B')
+        self.assertEqual(result.file_root.children[2].lines, ['def'])
+        self.assertEqual(result.file_root.children[2].get_id(), 'C')
+        # after last top section
+        result = FileFormat("# A\nabc\n# B\ndef")
+        result.file_root.add_sibling_after('B')
+        self.assertEqual(len(result.file_root.children), 3)
+        self.assertEqual(result.file_root.children[0].lines, ['abc'])
+        self.assertEqual(result.file_root.children[0].get_id(), 'A')
+        self.assertEqual(result.file_root.children[1].lines, ['def'])
+        self.assertEqual(result.file_root.children[1].get_id(), 'B')
+        self.assertEqual(result.file_root.children[2].lines, [])
+        self.assertEqual(result.file_root.children[2].get_id(), 'C')
+        # after lower section
+        result = FileFormat("# A\nabc\n## A.A\ndef")
+        result.file_root.add_sibling_after('A.A')
+        self.assertEqual(len(result.file_root.children), 1)
+        self.assertEqual(result.file_root.children[0].lines, ['abc'])
+        self.assertEqual(result.file_root.children[0].get_id(), 'A')
+        self.assertEqual(len(result.file_root.children[0].children), 2)
+        self.assertEqual(result.file_root.children[0].children[0].lines, ['def'])
+        self.assertEqual(result.file_root.children[0].children[0].get_id(), 'A.A')
+        self.assertEqual(result.file_root.children[0].children[1].lines, [])
+        self.assertEqual(result.file_root.children[0].children[1].get_id(), 'A.B')
+        # id not found
+        result = FileFormat("# A\nabc")
+        success = result.file_root.add_sibling_after('A.A')
+        self.assertEqual(success, False)
+        self.assertEqual(len(result.file_root.children), 1)
+        self.assertEqual(result.file_root.children[0].lines, ['abc'])
+        self.assertEqual(result.file_root.children[0].get_id(), 'A')
+        
 
 class Test_FileSection(unittest.TestCase):
     def test_get_level(self):

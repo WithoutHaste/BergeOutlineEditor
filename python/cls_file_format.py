@@ -29,12 +29,15 @@ class FileFormat():
             if current_file_section == None:
                 # new top-level section
                 current_file_section = FileSection(self.file_root)
+                self.file_root.append_child(current_file_section)
                 continue
             if level > current_file_section.level:
                 if level > current_file_section.level + 1:
                     self.parsing_errors.append("Header levels skipped a step - this may not be a Berge-formatted file")
                 # add new child to parent
-                current_file_section = FileSection(current_file_section)
+                new_file_section = FileSection(current_file_section)
+                current_file_section.append_child(new_file_section)
+                current_file_section = new_file_section
                 continue
             self.parsing_errors.append("Should not reach this point - unknown section depth")
         
@@ -52,6 +55,19 @@ class FileRoot():
     def append_child(self, child):
         self.children.append(child)
         
+    # recursive - search section tree for the matching section
+    def add_sibling_after(self, section_id):
+        child_index = 0
+        for child in self.children:
+            if child.get_id() == section_id:
+                self.children.insert(child_index + 1, FileSection(self))
+                return True
+            done = child.add_sibling_after(section_id)
+            if done:
+                return True
+            child_index = child_index + 1
+        return False
+        
     def get_child_id(self, child):
         ith = FileRoot.get_index_of_element(self.children, child)
         return FileRoot.convert_index_to_id(ith)
@@ -65,7 +81,7 @@ class FileRoot():
             index = index + 1
                 
     # convert integer to characters
-    # A to Z, AA to AZ to ZZ, etc
+    # A to Z, BA to BZ to ZZ, etc
     @staticmethod
     def convert_index_to_id(index):
         char_count = len(FileRoot.ID_CHARACTERS)
@@ -78,7 +94,16 @@ class FileRoot():
             index = index - remainder
             index = index / char_count
         return result
-        
+    
+    # convert characters to integer
+    @staticmethod
+    def convert_id_to_index(char_id):
+        result = 0
+        while len(char_id) > 0:
+            char = char_id[0]
+            
+            char_id = char_id[1:] # drop first char
+        return result
 
 class FileSection():
     def __init__(self, parent_section):
@@ -87,7 +112,7 @@ class FileSection():
         self.level = 1
         if parent_section != None:
             self.level = parent_section.level + 1
-            parent_section.append_child(self)
+            # cannot auto-append child to parent here because of cases where parent is inserting child at specific index
         self.parent = parent_section
         pass
         
@@ -96,6 +121,19 @@ class FileSection():
         
     def append_child(self, child):
         self.children.append(child)
+        
+    # recursive - search section tree for the matching section
+    def add_sibling_after(self, section_id):
+        child_index = 0
+        for child in self.children:
+            if child.get_id() == section_id:
+                self.children.insert(child_index + 1, FileSection(self))
+                return True
+            done = child.add_sibling_after(section_id)
+            if done:
+                return True
+            child_index = child_index + 1
+        return False
         
     def get_full_text(self):
         return "\n".join(self.lines).strip()
