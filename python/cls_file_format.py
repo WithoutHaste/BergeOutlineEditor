@@ -43,14 +43,11 @@ class FileFormat():
         
     def is_valid(self):
         return len(self.parsing_errors) == 0
-        
-class FileRoot():
-    ID_DELIMITER = "."
-    ID_CHARACTERS = ['A','B','C','D','E','F','G','H','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'] # skipping I (commonly looks like an L)
-    
+
+
+class TreeNode:
     def __init__(self):
         self.children = []
-        self.level = 0
         
     def append_child(self, child):
         self.children.append(child)
@@ -69,6 +66,15 @@ class FileRoot():
                 return done
             child_index = child_index + 1
         return None
+    
+        
+class FileRoot(TreeNode):
+    ID_DELIMITER = "."
+    ID_CHARACTERS = ['A','B','C','D','E','F','G','H','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'] # skipping I (commonly looks like an L)
+    
+    def __init__(self):
+        TreeNode.__init__(self)
+        self.level = 0
 
     # ids are specific to the current arrangement of sections in the tree
     # so the id of a block of text will change as new sections are added/removed/reordered
@@ -109,9 +115,10 @@ class FileRoot():
             char_id = char_id[1:] # drop first char
         return result
 
-class FileSection():
+
+class FileSection(TreeNode):
     def __init__(self, parent_section):
-        self.children = []
+        TreeNode.__init__(self)
         self.lines = []
         self.level = 1
         if parent_section != None:
@@ -122,24 +129,6 @@ class FileSection():
         
     def append_line(self, line):
         self.lines.append(line)
-        
-    def append_child(self, child):
-        self.children.append(child)
-        
-    # recursive - search section tree for the matching section
-    # returns None (couldn't find it) or the Id of the new section
-    def add_sibling_after(self, section_id):
-        child_index = 0
-        for child in self.children:
-            if child.get_id() == section_id:
-                new_section = FileSection(self)
-                self.children.insert(child_index + 1, new_section)
-                return new_section.get_id()
-            done = child.add_sibling_after(section_id)
-            if done != None:
-                return done
-            child_index = child_index + 1
-        return None
         
     def get_full_text(self):
         return "\n".join(self.lines).strip()

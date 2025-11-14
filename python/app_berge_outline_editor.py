@@ -85,7 +85,6 @@ class Window(tkinter.Frame):
                 textbox.focus_set()
             tab_order = tab_order + 1
         self.focus_section_id = None # clear instruction
-        # MAYBE NEED the short answer is this: when you destroy all the children widgets, pack no longer thinks it "owns" the window since there are no children to manage. Because of that, it doesn't try to resize the window. A simple work-around is to pack a tiny 1x1 frame in the window temporarily, to cause pack to resize the containing frame.
         
     def focus_based_on_tab_order(self, tab_order):
         for widget in self.section_frame.winfo_children():
