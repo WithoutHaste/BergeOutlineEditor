@@ -11,6 +11,7 @@ Python:
 
 When inside a section (textbox):
 - Shift+Enter will insert a new section sibling after the current one.
+- Shift+Down will move focus to the next section downward
 
 ## Architecture
 
