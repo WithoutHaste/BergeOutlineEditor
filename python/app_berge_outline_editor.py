@@ -80,6 +80,7 @@ class Window(tkinter.Frame):
             textbox.pack(side=tkinter.TOP, fill=tkinter.X, expand=True, anchor='w', padx=10)
             textbox.bind('<Shift-Return>', self.section_shift_plus_return)
             textbox.bind('<Shift-Down>', self.section_shift_plus_down)
+            textbox.bind('<Shift-Up>', self.section_shift_plus_up)
             if hasattr(self, 'focus_section_id') and self.focus_section_id == file_section.get_id():
                 textbox.focus_set()
             tab_order = tab_order + 1
@@ -108,6 +109,11 @@ class Window(tkinter.Frame):
     def section_shift_plus_down(self, event):
         # change focus to next section
         self.focus_based_on_tab_order(event.widget.tab_order + 1)
+        return 'break'
+
+    def section_shift_plus_up(self, event):
+        # change focus to previous section
+        self.focus_based_on_tab_order(event.widget.tab_order - 1)
         return 'break'
 
     @staticmethod
