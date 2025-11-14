@@ -10,9 +10,9 @@ Python:
 ## Keyboard Commands
 
 When inside a section (textbox):
-- Shift+Enter will insert a new section sibling after the current one.
-- Shift+Down will move focus to the next section downward
-- Shift+Up will move focus to the previous section upward
+- Alt+Enter will insert a new section sibling after the current one.
+- Alt+Down will move focus to the next section downward
+- Alt+Up will move focus to the previous section upward
   - built-in Shift+Tab also works
 
 ## Architecture

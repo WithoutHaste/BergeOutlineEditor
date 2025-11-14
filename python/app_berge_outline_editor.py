@@ -78,9 +78,9 @@ class Window(tkinter.Frame):
             textbox.tab_order = tab_order
             textbox.insert(tkinter.END, file_section.get_full_text())
             textbox.pack(side=tkinter.TOP, fill=tkinter.X, expand=True, anchor='w', padx=10)
-            textbox.bind('<Shift-Return>', self.section_shift_plus_return)
-            textbox.bind('<Shift-Down>', self.section_shift_plus_down)
-            textbox.bind('<Shift-Up>', self.section_shift_plus_up)
+            textbox.bind('<Alt-Return>', self.section_alt_plus_return)
+            textbox.bind('<Alt-Down>', self.section_alt_plus_down)
+            textbox.bind('<Alt-Up>', self.section_alt_plus_up)
             if hasattr(self, 'focus_section_id') and self.focus_section_id == file_section.get_id():
                 textbox.focus_set()
             tab_order = tab_order + 1
@@ -97,7 +97,7 @@ class Window(tkinter.Frame):
                     widget.mark_set("insert", "%d.%d" % (line, column))
                 return
 
-    def section_shift_plus_return(self, event):
+    def section_alt_plus_return(self, event):
         # insert new section sibling after this one
         new_section_id = self.current_data.file_root.add_sibling_after(event.widget.file_section_id)
         # redraw all
@@ -105,12 +105,12 @@ class Window(tkinter.Frame):
         self.update_section_frame()
         return 'break'
 
-    def section_shift_plus_down(self, event):
+    def section_alt_plus_down(self, event):
         # change focus to next section
         self.focus_based_on_tab_order(event.widget.tab_order + 1)
         return 'break'
 
-    def section_shift_plus_up(self, event):
+    def section_alt_plus_up(self, event):
         # change focus to previous section
         self.focus_based_on_tab_order(event.widget.tab_order - 1)
         return 'break'
