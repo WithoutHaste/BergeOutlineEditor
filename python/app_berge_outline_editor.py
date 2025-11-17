@@ -31,6 +31,12 @@ class Window(tkinter.Frame):
         section_frame  =  tkinter.Frame(self,  width=200,  height=400)
         section_frame.pack(side=tkinter.TOP,  fill=tkinter.BOTH, expand=True,  padx=10)        
         self.section_frame = section_frame
+        # gui organization
+        # section_frame contains everything related to the file sections
+        # within that, primary interest is the children of sections are vertically aligned with each other
+        # therefore, each top-level section will init its own horizontally-stretched frame, holding it and its children
+        # textbox width will be hard-coded so that they appear to display in columns, one per "level"
+        # the GUI will be able to handle more than 3 levels, but default display will expect only 3 levels
         
         button_frame_bottom  =  tkinter.Frame(self,  width=200,  height=400)
         button_frame_bottom.pack(side=tkinter.TOP,  fill=tkinter.X, expand=True,  padx=0)
@@ -86,16 +92,23 @@ class Window(tkinter.Frame):
             tab_order = tab_order + 1
         self.focus_section_id = None # clear instruction
         
-    def focus_based_on_tab_order(self, tab_order):
-        for widget in self.section_frame.winfo_children():
-            if hasattr(widget, 'tab_order') and widget.tab_order == tab_order:
+    # recursive, returns True when the right textbox is located
+    def focus_based_on_tab_order(self, tab_order, frame=None):
+        if frame == None:
+            return self.focus_based_on_tab_order(tab_order, self.section_frame)
+        for widget in frame.winfo_children():
+            if isinstance(widget, tkinter.Frame):
+                # dig down for the textboxes within the nested frames
+                success = self.focus_based_on_tab_order(tab_order, widget)
+                if success:
+                    return True
+            elif hasattr(widget, 'tab_order') and widget.tab_order == tab_order:
                 widget.focus_set()
                 if isinstance(widget, tkinter.Text):
                     # put cursor at start of text
-                    line = 0
-                    column = 0
-                    widget.mark_set("insert", "%d.%d" % (line, column))
-                return
+                    widget.mark_set("insert", "0.0")
+                return True
+        return False
 
     def section_alt_plus_return(self, event):
         # insert new section sibling after this one
@@ -123,7 +136,7 @@ class Window(tkinter.Frame):
 		
 if __name__ == "__main__":
     root = tkinter.Tk()
-    root.geometry("800x800") #size of window - width x height
+    root.geometry("1500x800") #size of window - width x height
     app = Window(root)
     root.mainloop()
 
