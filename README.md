@@ -9,11 +9,14 @@ Python:
 
 ## Keyboard Commands
 
-When inside a section (textbox):
-- Alt+Enter will insert a new section sibling after the current one.
-- Alt+Down will move focus to the next section downward
-- Alt+Up will move focus to the previous section upward
-  - built-in Shift+Tab also works
+### When inside a section (textbox):
+
+Alt+Enter will insert a new section sibling after the current one.
+
+Alt+Down will move focus to the next section downward
+
+Alt+Up will move focus to the previous section upward
+- built-in Shift+Tab also works
 
 ## Architecture
 
@@ -40,12 +43,8 @@ Inner Format:
   
 See `test_files` directory for examples of the file format.
 
-## Using the GUI
-
-Shift+Enter = Insert a new section below this one
-
-Shift+Down = Move cursor to the section below this one
-
 ## Warnings
+
+Berge is built entirely for my own use, so feature development will end as soon as it works well enough for my projects.  The gui is built for my screen and viewing habits.
 
 Berge is built for small projects.  It loads the entire text of the document at once, so a large document could cause it to run out of memory.
