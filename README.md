@@ -18,6 +18,8 @@ Alt+Down will move focus to the next section downward
 Alt+Up will move focus to the previous section upward
 - built-in Shift+Tab also works
 
+Alt+Right will move focus to the first child of the current section
+
 ## Architecture
 
 Jumping between Python and C++, depending on which seems easier.

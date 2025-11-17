@@ -4,7 +4,7 @@ import re
 import os
 import subprocess
 import uuid
-from cls_file_format import FileFormat
+from cls_file_format import FileFormat, FileRoot
 
 
 class TabOrder():
@@ -113,6 +113,7 @@ class Window(tkinter.Frame):
         textbox.bind('<Alt-Return>', self.section_alt_plus_return)
         textbox.bind('<Alt-Down>', self.section_alt_plus_down)
         textbox.bind('<Alt-Up>', self.section_alt_plus_up)
+        textbox.bind('<Alt-Right>', self.section_alt_plus_right)
         if hasattr(self, 'focus_section_id') and self.focus_section_id == file_section.get_id():
             textbox.focus_set()
         if len(file_section.children) > 0:
@@ -153,6 +154,24 @@ class Window(tkinter.Frame):
                     widget.mark_set("insert", "0.0")
                 return True
         return False
+        
+    # recursive, returns True when the right textbox is located
+    def focus_based_on_id(self, section_id, frame=None):
+        if frame == None:
+            return self.focus_based_on_id(section_id, self.section_frame)
+        for widget in frame.winfo_children():
+            if isinstance(widget, tkinter.Frame):
+                # dig down for the textboxes within the nested frames
+                success = self.focus_based_on_id(section_id, widget)
+                if success:
+                    return True
+            elif hasattr(widget, 'file_section_id') and widget.file_section_id == section_id:
+                widget.focus_set()
+                if isinstance(widget, tkinter.Text):
+                    # put cursor at start of text
+                    widget.mark_set("insert", "0.0")
+                return True
+        return False
 
     def section_alt_plus_return(self, event):
         # insert new section sibling after this one
@@ -170,6 +189,11 @@ class Window(tkinter.Frame):
     def section_alt_plus_up(self, event):
         # change focus to previous section
         self.focus_based_on_tab_order(event.widget.tab_order - 1, event.widget.column)
+        return 'break'
+
+    def section_alt_plus_right(self, event):
+        # change focus to first child section
+        self.focus_based_on_id(event.widget.file_section_id + FileRoot.ID_DELIMITER + FileRoot.ID_CHARACTERS[0])
         return 'break'
 
     @staticmethod
