@@ -79,18 +79,46 @@ class Window(tkinter.Frame):
         Window.remove_children(self.section_frame)
         tab_order = 0
         for file_section in self.current_data.file_root.children:
-            textbox = tkinter.Text(self.section_frame, width=90, height=4) #measured in characters
-            textbox.file_section_id = file_section.get_id()
-            textbox.tab_order = tab_order
-            textbox.insert(tkinter.END, file_section.get_full_text())
-            textbox.pack(side=tkinter.TOP, fill=tkinter.X, expand=True, anchor='w', padx=10)
-            textbox.bind('<Alt-Return>', self.section_alt_plus_return)
-            textbox.bind('<Alt-Down>', self.section_alt_plus_down)
-            textbox.bind('<Alt-Up>', self.section_alt_plus_up)
-            if hasattr(self, 'focus_section_id') and self.focus_section_id == file_section.get_id():
-                textbox.focus_set()
+            frame = self.build_frame_for_file_section(self.section_frame, file_section, tab_order)
             tab_order = tab_order + 1
         self.focus_section_id = None # clear instruction
+
+    # recursively builds nested frames for children sections  
+    def build_frame_for_file_section(self, parent_widget, file_section, tab_order):
+        frame  =  tkinter.Frame(parent_widget,  width=200,  height=400)
+        frame.pack(side=tkinter.TOP,  fill=tkinter.X, expand=True,  padx=5)        
+        textbox_width = self.get_textbox_width(file_section.level)
+        textbox_height = self.get_textbox_height(file_section.level)
+        textbox = tkinter.Text(frame, width=textbox_width, height=textbox_height) #measured in characters
+        textbox.file_section_id = file_section.get_id()
+        textbox.tab_order = tab_order
+        textbox.insert(tkinter.END, file_section.get_full_text())
+        textbox.pack(side=tkinter.LEFT, fill=tkinter.NONE, expand=False, anchor='n', padx=5)
+        textbox.bind('<Alt-Return>', self.section_alt_plus_return)
+        textbox.bind('<Alt-Down>', self.section_alt_plus_down)
+        textbox.bind('<Alt-Up>', self.section_alt_plus_up)
+        if hasattr(self, 'focus_section_id') and self.focus_section_id == file_section.get_id():
+            textbox.focus_set()
+        if len(file_section.children) > 0:
+            children_frame  =  tkinter.Frame(frame,  width=200,  height=400)
+            children_frame.pack(side=tkinter.LEFT,  fill=tkinter.BOTH, expand=True,  padx=5)        
+            for child_section in file_section.children:
+                frame = self.build_frame_for_file_section(children_frame, child_section, tab_order)
+
+    # width is in characters, and is based on a 1500px wide window
+    def get_textbox_width(self, level):
+        if level == 1:
+            return 30
+        if level == 2:
+            return 45
+        return 70
+
+    def get_textbox_height(self, level):
+        if level == 1:
+            return 3
+        if level == 2:
+            return 8
+        return 16
         
     # recursive, returns True when the right textbox is located
     def focus_based_on_tab_order(self, tab_order, frame=None):
