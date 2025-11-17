@@ -11,15 +11,18 @@ class ScrollCanvas():
     # initializes a vertical-scrolling canvas
     # add widgets to the canvas to include them in the scrollable space
     def __init__(self, parent_widget):
-        frame  =  tkinter.Frame(parent_widget,  width=1500,  height=400)
+        frame  =  tkinter.Frame(parent_widget,  width=1500,  height=600)
         frame.pack(side=tkinter.TOP,  fill=tkinter.BOTH, expand=True)
 
-        canvas = tkinter.Canvas(frame,  width=1480,  height=400)
+        canvas = tkinter.Canvas(frame,  width=1480,  height=600)
         canvas.pack(side=tkinter.LEFT)
         scrollbar = tkinter.Scrollbar(frame, command=canvas.yview)
         scrollbar.pack(side=tkinter.LEFT, fill=tkinter.Y)
         canvas.configure(yscrollcommand=scrollbar.set)
         canvas.bind('<Configure>', self.on_configure)
+        #canvas.bind_all("<MouseWheel>", self.on_mousewheel)
+        canvas.bind_all("<Button-4>", self.on_mousewheel_down)
+        canvas.bind_all("<Button-5>", self.on_mousewheel_up)
         self.canvas = canvas
         
     def on_configure(self, event):
@@ -29,7 +32,27 @@ class ScrollCanvas():
 
     def update_scrollregion(self, height):
         bbox = (0, 0, 1480, height)
+        self.scrolling_height = height
         self.canvas.configure(scrollregion=bbox)
+
+    """        
+    def on_mousewheel(self, event):
+        self.canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+        # divide-by-120 is needed on Windows, it is not needed on Mac
+    """
+        
+    def on_mousewheel_up(self, event):
+        self.canvas.yview_scroll(int(1), "units")
+        
+    def on_mousewheel_down(self, event):
+        self.canvas.yview_scroll(int(-1), "units")
+        
+    # You may need to call .update() on your tkinter instance before calling the jump function, otherwise the winfo values may be incorrect.
+    def scroll_to_y(self, y):
+        y = y - 125 # messy - taking out top of window
+        print(y)
+        self.canvas.yview_moveto(y / self.scrolling_height) # value 0 to 1
+
 
 class TabOrder():
     # tab_order is used to control up/down movement
@@ -192,6 +215,7 @@ class Window(tkinter.Frame):
                 if isinstance(widget, tkinter.Text):
                     # put cursor at start of text
                     widget.mark_set("insert", "0.0")
+                self.scroll_canvas.scroll_to_y(widget.winfo_rooty())
                 return True
         return False
         
@@ -210,6 +234,7 @@ class Window(tkinter.Frame):
                 if isinstance(widget, tkinter.Text):
                     # put cursor at start of text
                     widget.mark_set("insert", "0.0")
+                self.scroll_canvas.scroll_to_y(widget.winfo_rooty())
                 return True
         return False
 
