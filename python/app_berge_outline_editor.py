@@ -7,6 +7,30 @@ import uuid
 from cls_file_format import FileFormat, FileRoot
 
 
+class ScrollCanvas():
+    # initializes a vertical-scrolling canvas
+    # add widgets to the canvas to include them in the scrollable space
+    def __init__(self, parent_widget):
+        frame  =  tkinter.Frame(parent_widget,  width=1500,  height=400)
+        frame.pack(side=tkinter.TOP,  fill=tkinter.BOTH, expand=True)
+
+        canvas = tkinter.Canvas(frame,  width=1480,  height=400)
+        canvas.pack(side=tkinter.LEFT)
+        scrollbar = tkinter.Scrollbar(frame, command=canvas.yview)
+        scrollbar.pack(side=tkinter.LEFT, fill=tkinter.Y)
+        canvas.configure(yscrollcommand=scrollbar.set)
+        canvas.bind('<Configure>', self.on_configure)
+        self.canvas = canvas
+        
+    def on_configure(self, event):
+        # update scrollregion after starting 'mainloop', when all widgets are in canvas
+        # you want the scrollregion to exactly match the total size of what is inside the frame
+        event.widget.configure(scrollregion=event.widget.bbox('all'))
+
+    def update_scrollregion(self, height):
+        bbox = (0, 0, 1480, height)
+        self.canvas.configure(scrollregion=bbox)
+
 class TabOrder():
     # tab_order is used to control up/down movement
     # tab_order is breath-first, while display order is depth-first
@@ -43,8 +67,12 @@ class Window(tkinter.Frame):
         open_button = tkinter.Button(button_frame_top, text="Open File", command=self.client_select_file)
         open_button.pack(side=tkinter.RIGHT, padx=10)
 
-        section_frame  =  tkinter.Frame(self,  width=200,  height=400)
-        section_frame.pack(side=tkinter.TOP,  fill=tkinter.BOTH, expand=True,  padx=10)        
+        scroll_canvas = ScrollCanvas(self)
+        self.scroll_canvas = scroll_canvas
+
+        section_frame  =  tkinter.Frame(scroll_canvas.canvas,  width=200,  height=400)
+        ###section_frame.pack(side=tkinter.TOP,  fill=tkinter.BOTH, expand=True,  padx=10)        
+        scroll_canvas.canvas.create_window((0,0), window=section_frame, anchor='nw')
         self.section_frame = section_frame
         # gui organization
         # section_frame contains everything related to the file sections
@@ -93,17 +121,23 @@ class Window(tkinter.Frame):
     def update_section_frame(self):
         Window.remove_children(self.section_frame)
         tab_order_control = TabOrder()
+        max_height = 0
         for file_section in self.current_data.file_root.children:
-            frame = self.build_frame_for_file_section(self.section_frame, file_section, tab_order_control)
+            sub_height = self.build_frame_for_file_section(self.section_frame, file_section, tab_order_control)
+            max_height = sub_height + max_height
+        self.scroll_canvas.update_scrollregion(max_height)
         self.focus_section_id = None # clear instruction
 
     # recursively builds nested frames for children sections  
     # initializes focus on currently selected section
+    # returns max-height of this subtree of textboxes
     def build_frame_for_file_section(self, parent_widget, file_section, tab_order_control):
+        max_height = 0
         frame  =  tkinter.Frame(parent_widget,  width=200,  height=400)
         frame.pack(side=tkinter.TOP,  fill=tkinter.X, expand=True,  padx=5)        
         textbox_width = self.get_textbox_width(file_section.level)
         textbox_height = self.get_textbox_height(file_section.level)
+        max_height = textbox_height * 22 # converting char height to px height, roughly
         textbox = tkinter.Text(frame, width=textbox_width, height=textbox_height) #measured in characters
         textbox.file_section_id = file_section.get_id()
         textbox.tab_order = tab_order_control.get_tab_order(file_section.level)
@@ -117,11 +151,16 @@ class Window(tkinter.Frame):
         textbox.bind('<Alt-Right>', self.section_alt_plus_right)
         if hasattr(self, 'focus_section_id') and self.focus_section_id == file_section.get_id():
             textbox.focus_set()
+        children_height = 0
         if len(file_section.children) > 0:
             children_frame  =  tkinter.Frame(frame,  width=200,  height=400)
             children_frame.pack(side=tkinter.LEFT,  fill=tkinter.BOTH, expand=True,  padx=5)        
             for child_section in file_section.children:
-                frame = self.build_frame_for_file_section(children_frame, child_section, tab_order_control)
+                child_height = self.build_frame_for_file_section(children_frame, child_section, tab_order_control)
+                children_height = children_height + child_height
+        if children_height > max_height:
+            max_height = children_height
+        return max_height
 
     # width is in characters, and is based on a 1500px wide window
     def get_textbox_width(self, level):
