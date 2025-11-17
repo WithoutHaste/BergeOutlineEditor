@@ -7,6 +7,22 @@ import uuid
 from cls_file_format import FileFormat
 
 
+class TabOrder():
+    # tab_order is used to control up/down movement
+    # tab_order is breath-first, while display order is depth-first
+    # this class keeps track of what the current tab_order for each column(level) is
+    def __init__(self):
+        # index = level
+        # levels start at 1, so initializing with a dummy value at 0
+        self.tab_order_per_level = [0]
+        
+    def get_tab_order(self, level):
+        while len(self.tab_order_per_level) <= level:
+            self.tab_order_per_level.append(0)
+        self.tab_order_per_level[level] = self.tab_order_per_level[level] + 1
+        return self.tab_order_per_level[level]
+
+
 class Window(tkinter.Frame):
     def __init__(self, master=None):
         tkinter.Frame.__init__(self, master)
@@ -17,7 +33,6 @@ class Window(tkinter.Frame):
         self.init_layout()
 
     def init_layout(self):
-        
         button_frame_top  =  tkinter.Frame(self,  width=200,  height=400)
         button_frame_top.pack(side=tkinter.TOP,  fill=tkinter.X, expand=True,  padx=10)        
         
@@ -77,21 +92,22 @@ class Window(tkinter.Frame):
         
     def update_section_frame(self):
         Window.remove_children(self.section_frame)
-        tab_order = 0
+        tab_order_control = TabOrder()
         for file_section in self.current_data.file_root.children:
-            frame = self.build_frame_for_file_section(self.section_frame, file_section, tab_order)
-            tab_order = tab_order + 1
+            frame = self.build_frame_for_file_section(self.section_frame, file_section, tab_order_control)
         self.focus_section_id = None # clear instruction
 
     # recursively builds nested frames for children sections  
-    def build_frame_for_file_section(self, parent_widget, file_section, tab_order):
+    # initializes focus on currently selected section
+    def build_frame_for_file_section(self, parent_widget, file_section, tab_order_control):
         frame  =  tkinter.Frame(parent_widget,  width=200,  height=400)
         frame.pack(side=tkinter.TOP,  fill=tkinter.X, expand=True,  padx=5)        
         textbox_width = self.get_textbox_width(file_section.level)
         textbox_height = self.get_textbox_height(file_section.level)
         textbox = tkinter.Text(frame, width=textbox_width, height=textbox_height) #measured in characters
         textbox.file_section_id = file_section.get_id()
-        textbox.tab_order = tab_order
+        textbox.tab_order = tab_order_control.get_tab_order(file_section.level)
+        textbox.column = file_section.level
         textbox.insert(tkinter.END, file_section.get_full_text())
         textbox.pack(side=tkinter.LEFT, fill=tkinter.NONE, expand=False, anchor='n', padx=5)
         textbox.bind('<Alt-Return>', self.section_alt_plus_return)
@@ -103,7 +119,7 @@ class Window(tkinter.Frame):
             children_frame  =  tkinter.Frame(frame,  width=200,  height=400)
             children_frame.pack(side=tkinter.LEFT,  fill=tkinter.BOTH, expand=True,  padx=5)        
             for child_section in file_section.children:
-                frame = self.build_frame_for_file_section(children_frame, child_section, tab_order)
+                frame = self.build_frame_for_file_section(children_frame, child_section, tab_order_control)
 
     # width is in characters, and is based on a 1500px wide window
     def get_textbox_width(self, level):
@@ -121,16 +137,16 @@ class Window(tkinter.Frame):
         return 16
         
     # recursive, returns True when the right textbox is located
-    def focus_based_on_tab_order(self, tab_order, frame=None):
+    def focus_based_on_tab_order(self, tab_order, column, frame=None):
         if frame == None:
-            return self.focus_based_on_tab_order(tab_order, self.section_frame)
+            return self.focus_based_on_tab_order(tab_order, column, self.section_frame)
         for widget in frame.winfo_children():
             if isinstance(widget, tkinter.Frame):
                 # dig down for the textboxes within the nested frames
-                success = self.focus_based_on_tab_order(tab_order, widget)
+                success = self.focus_based_on_tab_order(tab_order, column, widget)
                 if success:
                     return True
-            elif hasattr(widget, 'tab_order') and widget.tab_order == tab_order:
+            elif hasattr(widget, 'tab_order') and widget.tab_order == tab_order and widget.column == column:
                 widget.focus_set()
                 if isinstance(widget, tkinter.Text):
                     # put cursor at start of text
@@ -148,12 +164,12 @@ class Window(tkinter.Frame):
 
     def section_alt_plus_down(self, event):
         # change focus to next section
-        self.focus_based_on_tab_order(event.widget.tab_order + 1)
+        self.focus_based_on_tab_order(event.widget.tab_order + 1, event.widget.column)
         return 'break'
 
     def section_alt_plus_up(self, event):
         # change focus to previous section
-        self.focus_based_on_tab_order(event.widget.tab_order - 1)
+        self.focus_based_on_tab_order(event.widget.tab_order - 1, event.widget.column)
         return 'break'
 
     @staticmethod
