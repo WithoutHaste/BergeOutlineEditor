@@ -157,7 +157,7 @@ class Window(tkinter.Frame):
     def build_frame_for_file_section(self, parent_widget, file_section, tab_order_control):
         max_height = 0
         frame  =  tkinter.Frame(parent_widget,  width=200,  height=400)
-        frame.pack(side=tkinter.TOP,  fill=tkinter.X, expand=True,  padx=5)        
+        frame.pack(side=tkinter.TOP,  fill=tkinter.X, expand=True,  padx=2) 
         textbox_width = self.get_textbox_width(file_section.level)
         textbox_height = self.get_textbox_height(file_section.level)
         max_height = textbox_height * 22 # converting char height to px height, roughly
@@ -166,7 +166,7 @@ class Window(tkinter.Frame):
         textbox.tab_order = tab_order_control.get_tab_order(file_section.level)
         textbox.column = file_section.level
         textbox.insert(tkinter.END, file_section.get_full_text())
-        textbox.pack(side=tkinter.LEFT, fill=tkinter.NONE, expand=False, anchor='n', padx=5)
+        textbox.pack(side=tkinter.LEFT, fill=tkinter.NONE, expand=False, anchor='n', padx=2)
         textbox.bind('<Alt-Return>', self.section_alt_plus_return)
         textbox.bind('<Alt-Down>', self.section_alt_plus_down)
         textbox.bind('<Alt-Up>', self.section_alt_plus_up)
@@ -177,7 +177,7 @@ class Window(tkinter.Frame):
         children_height = 0
         if len(file_section.children) > 0:
             children_frame  =  tkinter.Frame(frame,  width=200,  height=400)
-            children_frame.pack(side=tkinter.LEFT,  fill=tkinter.BOTH, expand=True,  padx=5)        
+            children_frame.pack(side=tkinter.LEFT,  fill=tkinter.BOTH, expand=True,  padx=2)
             for child_section in file_section.children:
                 child_height = self.build_frame_for_file_section(children_frame, child_section, tab_order_control)
                 children_height = children_height + child_height
@@ -191,7 +191,7 @@ class Window(tkinter.Frame):
             return 30
         if level == 2:
             return 45
-        return 70
+        return 68
 
     def get_textbox_height(self, level):
         if level == 1:
