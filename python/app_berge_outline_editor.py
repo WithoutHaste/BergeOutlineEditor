@@ -113,6 +113,7 @@ class Window(tkinter.Frame):
         textbox.bind('<Alt-Return>', self.section_alt_plus_return)
         textbox.bind('<Alt-Down>', self.section_alt_plus_down)
         textbox.bind('<Alt-Up>', self.section_alt_plus_up)
+        textbox.bind('<Alt-Left>', self.section_alt_plus_left)
         textbox.bind('<Alt-Right>', self.section_alt_plus_right)
         if hasattr(self, 'focus_section_id') and self.focus_section_id == file_section.get_id():
             textbox.focus_set()
@@ -191,9 +192,18 @@ class Window(tkinter.Frame):
         self.focus_based_on_tab_order(event.widget.tab_order - 1, event.widget.column)
         return 'break'
 
+    def section_alt_plus_left(self, event):
+        # change focus to parent section
+        id_segments = event.widget.file_section_id.split(FileRoot.ID_DELIMITER)
+        id_segments.pop()
+        parent_id = FileRoot.ID_DELIMITER.join(id_segments)
+        self.focus_based_on_id(parent_id)
+        return 'break'
+
     def section_alt_plus_right(self, event):
         # change focus to first child section
-        self.focus_based_on_id(event.widget.file_section_id + FileRoot.ID_DELIMITER + FileRoot.ID_CHARACTERS[0])
+        first_child_id = event.widget.file_section_id + FileRoot.ID_DELIMITER + FileRoot.ID_CHARACTERS[0]
+        self.focus_based_on_id(first_child_id)
         return 'break'
 
     @staticmethod
