@@ -178,6 +178,7 @@ class Window(tkinter.Frame):
         textbox.insert(tkinter.END, file_section.get_full_text())
         textbox.pack(side=tkinter.LEFT, fill=tkinter.NONE, expand=False, anchor='n', padx=2)
         textbox.bind('<Alt-Return>', self.section_alt_plus_return)
+        textbox.bind('<Alt-m>', self.section_alt_plus_m)
         textbox.bind('<Alt-Down>', self.section_alt_plus_down)
         textbox.bind('<Alt-Up>', self.section_alt_plus_up)
         textbox.bind('<Alt-Left>', self.section_alt_plus_left)
@@ -251,6 +252,16 @@ class Window(tkinter.Frame):
     def section_alt_plus_return(self, event):
         # insert new section sibling after this one
         new_section_id = self.current_data.file_root.add_sibling_after(event.widget.file_section_id)
+        # redraw all
+        self.focus_section_id = new_section_id
+        self.update_section_frame()
+        return 'break'
+
+    def section_alt_plus_m(self, event):
+        # insert first child of current section, if there are none
+        new_section_id = self.current_data.file_root.add_first_child(event.widget.file_section_id)
+        if new_section_id == None:
+            return
         # redraw all
         self.focus_section_id = new_section_id
         self.update_section_frame()
