@@ -143,6 +143,38 @@ class Test_FileRoot(unittest.TestCase):
         self.assertEqual(data.file_root.children[0].lines, ['abc'])
         self.assertEqual(data.file_root.children[0].get_id(), 'A')
         
+    def test_add_first_child(self):
+        # to empty root - no change b/c root has no id
+        data = FileFormat("")
+        result = data.file_root.add_first_child('A')
+        self.assertEqual(result, None)
+        self.assertEqual(len(data.file_root.children), 0)
+        # to node with no children - adds child
+        data = FileFormat("# A\nabc\n## A.A\ndef")
+        result = data.file_root.add_first_child('A.A')
+        self.assertEqual(result, "A.A.A")
+        self.assertEqual(len(data.file_root.children), 1)
+        self.assertEqual(data.file_root.children[0].lines, ['abc'])
+        self.assertEqual(data.file_root.children[0].get_id(), 'A')
+        self.assertEqual(len(data.file_root.children[0].children), 1)
+        self.assertEqual(data.file_root.children[0].children[0].lines, ['def'])
+        self.assertEqual(data.file_root.children[0].children[0].get_id(), 'A.A')
+        self.assertEqual(len(data.file_root.children[0].children[0].children), 1)
+        self.assertEqual(data.file_root.children[0].children[0].children[0].lines, [])
+        self.assertEqual(data.file_root.children[0].children[0].children[0].get_id(), 'A.A.A')
+        self.assertEqual(len(data.file_root.children[0].children[0].children[0].children), 0)
+        # to node with children - no changes
+        data = FileFormat("# A\nabc\n## A.A\ndef")
+        result = data.file_root.add_first_child('A')
+        self.assertEqual(result, None)
+        self.assertEqual(len(data.file_root.children), 1)
+        self.assertEqual(data.file_root.children[0].lines, ['abc'])
+        self.assertEqual(data.file_root.children[0].get_id(), 'A')
+        self.assertEqual(len(data.file_root.children[0].children), 1)
+        self.assertEqual(data.file_root.children[0].children[0].lines, ['def'])
+        self.assertEqual(data.file_root.children[0].children[0].get_id(), 'A.A')
+        self.assertEqual(len(data.file_root.children[0].children[0].children), 0)
+        
 
 class Test_FileSection(unittest.TestCase):
     def test_get_level(self):

@@ -66,6 +66,23 @@ class TreeNode:
                 return done
             child_index = child_index + 1
         return None
+        
+    # recursive - search section tree for the matching section
+    # returns None (couldn't find it) or the Id of the new section
+    # if the selected section already has a child, no changes are made
+    def add_first_child(self, section_id):
+        if isinstance(self, FileSection):
+            if self.get_id() == section_id:
+                if len(self.children) == 0:
+                    new_section = FileSection(self)
+                    self.children.append(new_section)
+                    return new_section.get_id()
+                return None
+        for child in self.children:
+            done = child.add_first_child(section_id)
+            if done != None:
+                return done
+        return None
     
         
 class FileRoot(TreeNode):
