@@ -90,6 +90,9 @@ class Window(tkinter.Frame):
         open_button = tkinter.Button(button_frame_top, text="Open File", command=self.client_select_file)
         open_button.pack(side=tkinter.RIGHT, padx=10)
 
+        new_button = tkinter.Button(button_frame_top, text="New File", command=self.client_new_file)
+        new_button.pack(side=tkinter.RIGHT, padx=40)
+
         scroll_canvas = ScrollCanvas(self)
         self.scroll_canvas = scroll_canvas
 
@@ -121,6 +124,13 @@ class Window(tkinter.Frame):
             return
         self.current_filename = filename
         self.load_file()
+        
+    def client_new_file(self):
+        self.current_filename = None
+        self.current_data = FileFormat("# A\n")
+        self.focus_section_id = "A"
+        self.update_label_filename()
+        self.update_section_frame()
         
     def update_label_filename(self):
         if self.current_filename == None:
