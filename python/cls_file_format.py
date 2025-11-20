@@ -83,6 +83,19 @@ class TreeNode:
             if done != None:
                 return done
         return None
+        
+    # recursive - search section tree for the matching section
+    # returns False (couldn't find it) or True (found and updated)
+    def set_text_on_id(self, section_id, text):
+        if isinstance(self, FileSection):
+            if self.get_id() == section_id:
+                self.set_text(text)
+                return True
+        for child in self.children:
+            done = child.set_text_on_id(section_id, text)
+            if done:
+                return done
+        return False
     
         
 class FileRoot(TreeNode):
@@ -155,6 +168,9 @@ class FileSection(TreeNode):
         
     def append_line(self, line):
         self.lines.append(line)
+        
+    def set_text(self, text):
+        self.lines = [text]
         
     def get_full_text(self):
         return "\n".join(self.lines).strip()

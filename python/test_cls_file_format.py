@@ -175,6 +175,18 @@ class Test_FileRoot(unittest.TestCase):
         self.assertEqual(data.file_root.children[0].children[0].get_id(), 'A.A')
         self.assertEqual(len(data.file_root.children[0].children[0].children), 0)
         
+    def test_set_text_on_id(self):
+        # id found - first level
+        data = FileFormat("# A\nabc")
+        result = data.file_root.set_text_on_id('A', 'def')
+        self.assertEqual(result, True)
+        self.assertEqual(data.file_root.children[0].get_full_text(), 'def')
+        # id found - lower level
+        data = FileFormat("# A\nabc\n## A.A\ndef\n# B\nghi\n## B.A\njkl")
+        result = data.file_root.set_text_on_id('B.A', 'mno')
+        self.assertEqual(result, True)
+        self.assertEqual(data.file_root.children[1].children[0].get_full_text(), 'mno')
+        
     def test_to_save_format(self):
         # empty root
         data = FileFormat("")
