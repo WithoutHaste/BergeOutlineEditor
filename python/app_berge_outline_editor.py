@@ -110,11 +110,43 @@ class Window(tkinter.Frame):
         button_frame_bottom  =  tkinter.Frame(self,  width=200,  height=400)
         button_frame_bottom.pack(side=tkinter.TOP,  fill=tkinter.X, expand=True,  padx=0)
         
-        quitButton = tkinter.Button(button_frame_bottom, text="Quit", command=self.client_quit)
-        quitButton.pack(side=tkinter.RIGHT, padx=10)
+        save_as_button = tkinter.Button(button_frame_bottom, text="Save As", command=self.client_save_as)
+        save_as_button.pack(side=tkinter.LEFT, padx=10)
+        
+        save_button = tkinter.Button(button_frame_bottom, text="Save", command=self.client_save)
+        save_button.pack(side=tkinter.LEFT, padx=30)
+        
+        quit_button = tkinter.Button(button_frame_bottom, text="Quit", command=self.client_quit)
+        quit_button.pack(side=tkinter.RIGHT, padx=10)
             
     def client_quit(self):
         exit()
+        
+    def client_save_as(self):
+        filename = tkinter.filedialog.asksaveasfilename(filetypes=[('Markdown', '*.md')])
+        if filename == (): #empty tuple
+            filename = None
+        if filename == None:
+            return
+        self.current_filename = filename
+        self.update_label_filename()
+        self.client_save()
+        
+    def client_save(self):
+        if self.current_filename == None:
+            self.client_save_as()
+            return
+        # save file
+        if self.current_data == None:
+            print("Error: No data found")
+            return
+        f = open(self.current_filename, "w")
+        # save basic data
+        f.write(self.current_data.file_root.to_save_format())
+        # save duplicate summarized data
+        # TODO
+        f.close()
+        print("saved")
         
     def client_select_file(self):
         filename = tkinter.filedialog.askopenfilename(filetypes=[('Markdown', '*.md')])

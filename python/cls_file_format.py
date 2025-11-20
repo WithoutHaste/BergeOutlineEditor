@@ -171,7 +171,7 @@ class FileSection(TreeNode):
         
     # returns a string with the entire Markdown formatted text
     def to_save_format(self):
-        result = "#" * self.level + " " + self.get_id() + "\n\n" + "\n".join(self.lines)
+        result = "#" * self.level + " " + self.get_id() + "\n\n" + "\n".join(self.lines).strip()
         for child in self.children:
             child_result = child.to_save_format()
             result = result + "\n\n" + child_result
