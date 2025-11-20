@@ -175,6 +175,20 @@ class Test_FileRoot(unittest.TestCase):
         self.assertEqual(data.file_root.children[0].children[0].get_id(), 'A.A')
         self.assertEqual(len(data.file_root.children[0].children[0].children), 0)
         
+    def test_to_save_format(self):
+        # empty root
+        data = FileFormat("")
+        result = data.file_root.to_save_format()
+        self.assertEqual(result, "")
+        # one child
+        data = FileFormat("# A\nabc")
+        result = data.file_root.to_save_format()
+        self.assertEqual(result, "# A\n\nabc")
+        # nested children
+        data = FileFormat("# A\nabc\n## A.A\ndef\nghi\n# B\njkl")
+        result = data.file_root.to_save_format()
+        self.assertEqual(result, "# A\n\nabc\n\n## A.A\n\ndef\nghi\n\n# B\n\njkl")
+        
 
 class Test_FileSection(unittest.TestCase):
     def test_get_level(self):

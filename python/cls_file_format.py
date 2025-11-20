@@ -98,6 +98,15 @@ class FileRoot(TreeNode):
     def get_child_id(self, child):
         ith = FileRoot.get_index_of_element(self.children, child)
         return FileRoot.convert_index_to_id(ith)
+        
+    # returns a string with the entire Markdown formatted text
+    def to_save_format(self):
+        result = ""
+        for child in self.children:
+            child_result = child.to_save_format()
+            result = result + "\n\n" + child_result
+        result = result.strip()
+        return result
             
     @staticmethod
     def get_index_of_element(collection, element):
@@ -160,6 +169,14 @@ class FileSection(TreeNode):
         ith = FileRoot.get_index_of_element(self.children, child)
         return prefix + FileRoot.ID_DELIMITER + FileRoot.convert_index_to_id(ith)
         
+    # returns a string with the entire Markdown formatted text
+    def to_save_format(self):
+        result = "#" * self.level + " " + self.get_id() + "\n\n" + "\n".join(self.lines)
+        for child in self.children:
+            child_result = child.to_save_format()
+            result = result + "\n\n" + child_result
+        return result
+            
     @staticmethod
     def get_level(line):
         pattern = re.compile('#+', re.IGNORECASE )
