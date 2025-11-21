@@ -4,7 +4,11 @@ import re
 import os
 import subprocess
 import uuid
+from configparser import ConfigParser
 from cls_file_format import FileFormat, FileRoot
+
+
+CONFIG_FILENAME = "berge.ini" # stores local configuration, lives next to this file
 
 
 class ScrollCanvas():
@@ -76,7 +80,24 @@ class Window(tkinter.Frame):
         self.master.title("Berge Outline Editor") #title displayed on window
         self.pack(fill=tkinter.BOTH, expand=1) #layout of window
         self.current_filename = None
+        self.init_config()
         self.init_layout()
+        if self.current_filename != None:
+            self.load_file()
+        
+    def init_config(self):
+        self.config = ConfigParser()
+        if os.path.isfile(CONFIG_FILENAME):
+            self.config.read(CONFIG_FILENAME)
+        if 'LOCAL' in self.config:
+            if 'current_filename' in self.config['LOCAL']:
+                self.current_filename = self.config['LOCAL']['current_filename']
+        else:
+            self.config.add_section('LOCAL')
+                
+    def save_config(self):
+        with open(CONFIG_FILENAME, 'w') as f:
+            self.config.write(f)
 
     def init_layout(self):
         button_frame_top  =  tkinter.Frame(self,  width=200,  height=400)
@@ -168,6 +189,8 @@ class Window(tkinter.Frame):
             self.label_filename['text'] = "Filename: None"
         else:
             self.label_filename['text'] = "Filename: " + os.path.basename(self.current_filename)
+            self.config['LOCAL']['current_filename'] = self.current_filename
+            self.save_config()
 
     def load_file(self):
         if self.current_filename == None:

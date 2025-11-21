@@ -26,9 +26,16 @@ Alt+Left will move focus to the parent of the current section
 
 Alt+Right will move focus to the first child of the current section
 
+Control+s will save the file under the current filename
+
+## Local Settings
+
+App saves a local `berge.ini` file with your settings:
+- Last-used filename is saved, and is automatically opened when the app is started again.
+
 ## Architecture
 
-Jumping between Python and C++, depending on which seems easier.
+Python3
 
 ## File Format
 
