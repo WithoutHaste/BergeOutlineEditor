@@ -50,7 +50,6 @@ class ScrollCanvas():
     # You may need to call .update() on your tkinter instance before calling the jump function, otherwise the winfo values may be incorrect.
     def scroll_to_y(self, y):
         y = y - 125 # messy - taking out top of window
-        print(y)
         self.canvas.yview_moveto(y / self.scrolling_height) # value 0 to 1
 
 
@@ -209,6 +208,7 @@ class Window(tkinter.Frame):
         textbox.column = file_section.level
         textbox.insert(tkinter.END, file_section.get_full_text())
         textbox.pack(side=tkinter.LEFT, fill=tkinter.NONE, expand=False, anchor='n', padx=2)
+        textbox.bind('<KeyRelease>', self.section_key_release)
         textbox.bind('<Alt-Return>', self.section_alt_plus_return)
         textbox.bind('<Alt-m>', self.section_alt_plus_m)
         textbox.bind('<Alt-Down>', self.section_alt_plus_down)
@@ -280,6 +280,9 @@ class Window(tkinter.Frame):
                 self.scroll_canvas.scroll_to_y(widget.winfo_rooty())
                 return True
         return False
+        
+    def section_key_release(self, event):
+        self.current_data.file_root.set_text_on_id(event.widget.file_section_id, event.widget.get("1.0", "end"))
 
     def section_alt_plus_return(self, event):
         # insert new section sibling after this one
