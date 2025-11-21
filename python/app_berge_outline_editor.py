@@ -217,6 +217,7 @@ class Window(tkinter.Frame):
         textbox.bind('<Alt-Up>', self.section_alt_plus_up)
         textbox.bind('<Alt-Left>', self.section_alt_plus_left)
         textbox.bind('<Alt-Right>', self.section_alt_plus_right)
+        textbox.bind('<Control-s>', self.section_control_plus_s)
         if hasattr(self, 'focus_section_id') and self.focus_section_id == file_section.get_id():
             textbox.focus_set()
         children_height = 0
@@ -326,6 +327,10 @@ class Window(tkinter.Frame):
         # change focus to first child section
         first_child_id = event.widget.file_section_id + FileRoot.ID_DELIMITER + FileRoot.ID_CHARACTERS[0]
         self.focus_based_on_id(first_child_id)
+        return 'break'
+
+    def section_control_plus_s(self, event):
+        self.client_save()
         return 'break'
 
     @staticmethod
