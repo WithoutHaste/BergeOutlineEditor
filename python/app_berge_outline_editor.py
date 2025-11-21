@@ -210,7 +210,9 @@ class Window(tkinter.Frame):
         textbox.pack(side=tkinter.LEFT, fill=tkinter.NONE, expand=False, anchor='n', padx=2)
         textbox.bind('<KeyRelease>', self.section_key_release)
         textbox.bind('<Alt-Return>', self.section_alt_plus_return)
-        textbox.bind('<Alt-m>', self.section_alt_plus_m)
+        textbox.bind('<Alt-m>', self.section_alt_plus_plus)
+        textbox.bind('<Alt-plus>', self.section_alt_plus_plus)
+        textbox.bind('<Alt-equal>', self.section_alt_plus_plus)
         textbox.bind('<Alt-Down>', self.section_alt_plus_down)
         textbox.bind('<Alt-Up>', self.section_alt_plus_up)
         textbox.bind('<Alt-Left>', self.section_alt_plus_left)
@@ -292,7 +294,7 @@ class Window(tkinter.Frame):
         self.update_section_frame()
         return 'break'
 
-    def section_alt_plus_m(self, event):
+    def section_alt_plus_plus(self, event):
         # insert first child of current section, if there are none
         new_section_id = self.current_data.file_root.add_first_child(event.widget.file_section_id)
         if new_section_id == None:

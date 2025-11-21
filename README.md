@@ -13,10 +13,9 @@ Python:
 
 Alt+Enter will insert a new section sibling after the current one.
 
-Alt+m will insert the first child of the current section.
-- "m" for "more"
-- because "c" for "child" or "column" is already heavily used by "copy"
-- and because "+" on my keyboard requires "Shift" already
+Alt+Plus will insert the first child of the current section.
+- ditto for Alt+Equal (because this keyboard doesn't have a keypad)
+- ditto for Alt+m ("m" for "more", to offer a consistent key mapping)
 
 Alt+Down will move focus to the next section downward
 
