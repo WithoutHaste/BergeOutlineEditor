@@ -1,7 +1,7 @@
 import re
 
 class FileFormat():
-    MARKER_FINAL = "(final)"
+    MARKER_FINAL = "(final)\n"
     MARKER_DUPLICATE_SECTION = "# Duplicate: All Final Sections"
     
     # takes in the entire raw text of a file
@@ -119,6 +119,15 @@ class FileRoot(TreeNode):
             child_result = child.to_save_format()
             result = result + "\n\n" + child_result
         result = result.strip()
+        duplicate_section = ""
+        for child in self.children:
+            child_result = child.to_save_format_duplicate_section()
+            if child_result != "":
+                duplicate_section = duplicate_section + "\n\n" + child_result
+        duplicate_section = duplicate_section.strip()
+        if duplicate_section != "":
+            result = result + "\n\n" + FileFormat.MARKER_DUPLICATE_SECTION + "\n\n" + duplicate_section
+        result = result.strip()
         return result
             
     @staticmethod
@@ -192,6 +201,21 @@ class FileSection(TreeNode):
             child_result = child.to_save_format()
             result = result + "\n\n" + child_result
         return result
+            
+    # returns a string with just the "final" sections
+    def to_save_format_duplicate_section(self):
+        result = ""
+        if self.is_final_section():
+            result = self.get_full_text().replace(FileFormat.MARKER_FINAL, "").strip()
+        for child in self.children:
+            child_result = child.to_save_format_duplicate_section()
+            if child_result != "":
+                result = result + "\n\n" + child_result
+        result = result.strip()
+        return result
+        
+    def is_final_section(self):
+        return self.get_full_text().startswith(FileFormat.MARKER_FINAL)
             
     @staticmethod
     def get_level(line):

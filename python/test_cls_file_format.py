@@ -200,6 +200,10 @@ class Test_FileRoot(unittest.TestCase):
         data = FileFormat("# A\nabc\n## A.A\ndef\nghi\n# B\njkl")
         result = data.file_root.to_save_format()
         self.assertEqual(result, "# A\n\nabc\n\n## A.A\n\ndef\nghi\n\n# B\n\njkl")
+        # with duplicate section
+        data = FileFormat("# A\nabc\n## A.A\n(final)\ndef\nghi\n# B\njkl\n## B.A\n(final)\nmno")
+        result = data.file_root.to_save_format()
+        self.assertEqual(result, "# A\n\nabc\n\n## A.A\n\n(final)\ndef\nghi\n\n# B\n\njkl\n\n## B.A\n\n(final)\nmno\n\n# Duplicate: All Final Sections\n\ndef\nghi\n\nmno")
         
 
 class Test_FileSection(unittest.TestCase):
