@@ -264,9 +264,9 @@ class Window(tkinter.Frame):
 
     def get_textbox_height(self, level):
         if level == 1:
-            return 3
+            return 12
         if level == 2:
-            return 8
+            return 14
         return 16
         
     # recursive, returns True when the right textbox is located
